@@ -140,37 +140,78 @@
           </div>
 
           <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-              <div class="row gy-4">
-
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+            <form id="dataverseForm" class="php-email-form" data-aos="fade-up" data-aos-delay="200" novalidate>
+                <div class="row gy-4">
+        
+                    <div class="col-md-6">
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Your Name" required>
+                    </div>
+        
+                    <div class="col-md-6">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+        
+                    <div class="col-12">
+                        <input type="text" name="subject" id="subject" class="form-control" placeholder="Subject" required>
+                    </div>
+        
+                    <div class="col-12">
+                        <textarea name="message" id="message" class="form-control" rows="6" placeholder="Message" required></textarea>
+                    </div>
+        
+                    <div class="col-12 text-center">
+                        <div id="responseMessage" style="display: none;"></div>
+        
+                        <button type="submit" id="submitForm">Send Message</button>
+                    </div>
+        
                 </div>
-
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                </div>
-
-                <div class="col-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                </div>
-
-                <div class="col-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                </div>
-
-                <div class="col-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
             </form>
-          </div><!-- End Contact Form -->
-
+        </div>
+        
+        <script>
+            document.getElementById('dataverseForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+        
+                var data = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    subject: document.getElementById('subject').value,
+                    message: document.getElementById('message').value
+                };
+        
+                fetch('https://prod-09.canadacentral.logic.azure.com:443/workflows/72ecaf6eae6b4d35b92b0382ace44a30/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0jLDcC0OyUvjlkYbDP23ahDZD8eksaf3qWPZkoWEQHM', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Custom styling for success message
+                        var successMessage = "Your message has been sent. Thank you!";
+                        document.getElementById('responseMessage').innerHTML = successMessage;
+                        document.getElementById('responseMessage').style.cssText = "display: block; color: white; background-color: green; padding: 10px; margin-top: 10px;";
+        
+                        document.getElementById('dataverseForm').reset(); // Reset the form after submission
+                    } else {
+                        throw new Error('Something went wrong');
+                    }
+                })
+                .catch(error => {
+                    // Custom styling for error message
+                    var errorMessage = "Something went wrong. Please try again.";
+                    document.getElementById('responseMessage').innerHTML = errorMessage;
+                    document.getElementById('responseMessage').style.cssText = "display: block; color: white; background-color: red; padding: 10px; margin-top: 10px;";
+                });
+            });
+        </script>
+        
+        
+        
+        
+        
         </div>
 
       </div>
